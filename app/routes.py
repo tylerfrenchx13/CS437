@@ -1,6 +1,8 @@
+from flask import render_template
 from app import app
+from .TextManager import TextManager
 
 @app.route('/')
-@app.route('/index')
 def index():
-    return "Hello, World!"
+	data = TextManager.echo("I'm calling a method, and it's going to show up through the template.")
+	return render_template('index.html', data=data)
