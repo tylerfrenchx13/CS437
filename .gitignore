@@ -14,3 +14,6 @@ build/
 *.egg-info/
 
 .vscode/
+
+
+pyvenv.cfg
