@@ -32,6 +32,7 @@ def findCandidates(file, query):
 def rankMeUpScotty(metadataFile,termDocFile, docTermFreq, query, collectionSize):
     candidates = findCandidates(termDocFile,query)
     rank = ranking(candidates, metadataFile, termDocFile, docTermFreq ,query,collectionSize)
+    return rank
 
 def ranking(candidates, metadata, termDocFile, docTermFreq, query,collectionSize):
     candidateRank = {}
@@ -69,7 +70,6 @@ def ranking(candidates, metadata, termDocFile, docTermFreq, query,collectionSize
         for val in summation:
             totalVal+=val;
         candidateRank[candidate] = totalVal;
-    print(candidateRank)
     return candidateRank
 
 rankMeUpScotty("text_processing/metadata.tsv", "text_processing/term_doc_freq.tsv", "text_processing/doc_term_freq.tsv", "hard indoor",50000)
