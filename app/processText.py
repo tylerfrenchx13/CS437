@@ -17,6 +17,20 @@ CHUNKSIZE = 1000
 ITER_PROP = CHUNKSIZE / NUM_DOCS
 NUM_ITERS = NUM_DOCS / CHUNKSIZE
 
+def writeMetadata():
+	wordCounts = []
+	maxDs = []
+	with open('tokens.csv', 'r', encoding='utf8') as ftokens, open('term_doc_freq.tsv', 'r', encoding='utf8') as ffreq:
+		for index, row in enumerate(csv.reader(ftokens)):
+			wordCounts.append(len(row))
+
+		for row in csv.reader(ffreq, delimiter="\t"):
+			maxDs.append(row[1].split(":")[1])
+
+	with open('metadata.tsv', 'w', encoding='utf8') as f:
+		for i in range(len(maxDs)-1):
+			f.write("{0}\t{1}\t{2}\n".format(i+1, wordCounts[i], maxDs[i]))
+
 def readCounts():
     gatheredIndexes = {}
     with open('tokens.csv', 'r', encoding='utf8') as f:
@@ -70,6 +84,7 @@ def tokenize():
 def main():
     #tokenize()
     #readCounts()
+	writeMetadata()
 
 start_time = time.time()
 
