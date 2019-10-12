@@ -15,3 +15,16 @@ $('.query-input').on('input', function(event){
         }});
     }
 }); 
+
+
+/* KEYDOWN ON ENTER DO SEARCH */
+$('.query-input').on('keydown', function(event){
+    if(event.which == 13) {
+        location.href = "/search/"+$('.query-input').val();
+    }
+})
+
+/* CLICK SEARCH BUTTON DO SEARCH */
+$('.submit-btn').on('click', function(event){
+     location.href = "/search/"+$('.query-input').val();
+});

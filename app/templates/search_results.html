@@ -1,0 +1,37 @@
+<html>
+    <head>
+    <title>Search Engine</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/index.css') }}"/>
+    </head>
+    <body>
+        <div class='container'>
+            <!-- TITLES -->
+            <h1>Search Results</h1>
+            <!-- INPUT BOX -->
+            <div class="input-group mb-3">
+                <input type="text" class="form-control query-input" value="{{data.query}}">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary submit-btn" type="button">Button</button>
+                </div>
+            </div>
+            <!-- LIST OF SUGGESTIONS? -->
+            <div class="list-group suggestion-list">
+            </div>
+
+            <!-- SEARCH RESULTS -->
+            {% for page in data.search_results %}
+                <h3>{{ page.title }}</h3>
+                <p>{{page.snippet}}</p>
+            {% endfor %}
+
+            </body>
+            <!-- JQUERY -->
+            <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous">
+            </script>
+            <script src="{{ url_for('static', filename='scripts/query_suggestions.js') }}"></script>
+        </div>
+</html>
