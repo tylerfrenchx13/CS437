@@ -3,7 +3,8 @@
 # ENVIRONMENT SETUP:
 # Virtual Environment ("venv")
 1. On your local machine, inside the CS437 directory, run the following command:
-$ python -m venv	// creates the venv folder and need dependencies
+$ python -m venv venv	// creates the venv folder and need dependencies
+...if that doesn't work, do "virtualenv venv".
 2. If on Windows, run:
 $ source venv/Scripts/activate
 If on Linux, run:

@@ -7,12 +7,13 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+words = set(nltk.corpus.words.words())
 stopWords = set(stopwords.words('english'))
 ps = PorterStemmer()
 #table = str.maketrans({key: None for key in string.punctuation})
 myStopwords = {"''", '``', '“', '”', '’', "'s"}
 
-NUM_DOCS = 100000
+NUM_DOCS = 50000
 CHUNKSIZE = 1000
 ITER_PROP = CHUNKSIZE / NUM_DOCS
 NUM_ITERS = NUM_DOCS / CHUNKSIZE
@@ -31,7 +32,18 @@ def writeMetadata():
 		for i in range(len(maxDs)-1):
 			f.write("{0}\t{1}\t{2}\n".format(i+1, wordCounts[i], maxDs[i]))
 
-def readCounts():
+def writeDocTermFreq():
+	gatheredIndexes = {}
+	with open('tokens.csv', 'r', encoding='utf8') as ftokens, open('doc_term_freq.tsv', 'w', encoding='utf8') as fdocterm:
+		for index, row in enumerate(csv.reader(ftokens)):
+			countFrequency = Counter(row)
+			for index, key in enumerate(countFrequency):
+				if index > 0:
+					fdocterm.write("\t")
+				fdocterm.write("{0}:{1}".format(key, countFrequency[key]))
+			fdocterm.write("\n")
+
+def writeTermDocFreq():
     gatheredIndexes = {}
     with open('tokens.csv', 'r', encoding='utf8') as f:
         for index, row in enumerate(csv.reader(f)):
@@ -68,7 +80,7 @@ def tokenize():
                 content = row[1]
                 content = content.lower()
                 tokenized = word_tokenize(content)
-                noStopwords = [token for token in tokenized if not token in stopWords and not token in string.punctuation and not token in myStopwords]
+                noStopwords = [token for token in tokenized if not token in stopWords and not token in string.punctuation and not token in myStopwords and token in words]
                 stemmed = [ps.stem(word) for word in noStopwords]
                 
                 for index, token in enumerate(stemmed):
@@ -82,8 +94,9 @@ def tokenize():
             print("Iteration took {0} seconds --- {1}% Done --- Time remaining: {2} minute(s)".format(pace, 100*round(i*ITER_PROP, 3), round((AVG_PACE * (NUM_ITERS - (i+1)))/60, 3)))
 
 def main():
-    #tokenize()
-    #readCounts()
+	tokenize()
+	writeTermDocFreq()
+	writeDocTermFreq()
 	writeMetadata()
 
 start_time = time.time()
