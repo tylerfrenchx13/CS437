@@ -4,7 +4,6 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-words = set(nltk.corpus.words.words())
 stopWords = set(stopwords.words('english'))
 ps = PorterStemmer()
 myStopwords = {"''", '``', '“', '”', '’', "'s"}
@@ -32,7 +31,7 @@ class SnippetGenerator:
 	def tokenize(self, myString):
 		myString = myString.lower()
 		tokenized = word_tokenize(myString)
-		noStopwords = [token for token in tokenized if not token in stopWords and not token in string.punctuation and not token in myStopwords and token in words]
+		noStopwords = [token for token in tokenized if not token in stopWords and not token in string.punctuation and not token in myStopwords]
 		stemmed = [ps.stem(word) for word in noStopwords]
 		myString = stemmed
 		return myString
@@ -72,7 +71,7 @@ class SnippetGenerator:
 
 				sentVector = []
 				queryVector = []
-
+				
 				for word in q:
 					idf = math.log(len(document)/(self.numSentHaveWord(document, word)+1), 2)
 					tfSent = sentence.count(word)/len(sentence)
