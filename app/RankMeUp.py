@@ -35,10 +35,14 @@ class RankMeUp:
 
 			for candidate in candidates[0]:
 				# Iterate until we reach the right line!
+				## THIS TAKES A WHILE- Iterating through both metadata and docTerm
+				## to get to the right document number
+				#---------------------------------------
 				while curLine != candidate:
 					metaLine = next(metaReader)
 					docTermLine = next(docTermReader)
 					curLine += 1
+				#---------------------------------------
 
 				# Make sure we keep a running summation
 				summation = 0

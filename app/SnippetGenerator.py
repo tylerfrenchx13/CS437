@@ -48,9 +48,13 @@ class SnippetGenerator:
 			docLine = None
 
 			for doc in documentList:
+				## THIS TAKES A WHILE- Iterating through the DC to get to
+				## The right documents!!!
+				#-------------------------------
 				while curLine != doc:
 					docLine = next(docReader)
 					curLine += 1
+				#-------------------------------
 				if curLine == 0:
 					docLine = next(docReader)
 
