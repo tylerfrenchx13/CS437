@@ -11,9 +11,8 @@ import pandas as pd
 import string
 import math
 import csv
-
-NUM_DOCS = 10
-CHUNKSIZE = 1
+import sys
+csv.field_size_limit(sys.maxsize)
 
 class SnippetGenerator:
 
@@ -36,25 +35,53 @@ class SnippetGenerator:
 		myString = stemmed
 		return myString
 
-	def getDocuments(self):
+	def getDocuments(self, documentList):
 		documents = []
+		print(documentList)
+		documentList = sorted(documentList)
 
 		with open('wikipedia_text_files.csv', 'r', encoding='utf8') as src:
-			for i, chunk in enumerate(pd.read_csv(src, chunksize=CHUNKSIZE, nrows=NUM_DOCS)):
-				for row in chunk.itertuples():
-					title = row[2]
-					content = row[1]
-					documents.append([title, content])
+			docReader = csv.reader(src)
+
+			curLine = 1
+			next(docReader)
+			docLine = None
+
+			for doc in documentList:
+				while curLine != doc:
+					docLine = next(docReader)
+					curLine += 1
+				if curLine == 0:
+					docLine = next(docReader)
+
+				print(curLine)
+				title = docLine[1]
+				content = docLine[0]
+				documents.append([title, content])
+
 		return documents
 
-	def getSnippets(self, query):
+	def getSnippets(self, query, documentList):
 		q = self.tokenize(query)
 
-		documents = self.getDocuments()
+		documents = self.getDocuments(documentList)
 		titles = [d[0] for d in documents]
 		documents = [d[1] for d in documents]
 		origSentences = [sent_tokenize(d) for d in documents]
-		#print(origSentences)
+		for x, doc in enumerate(origSentences):
+			for y, sent in enumerate(doc):
+				if '\n' in sent:
+					sentSplit = sent.split('\n')
+					if 'may refer to' in sent:
+						origSentences[x][y] = sentSplit[0]
+					else:
+						origSentences[x][y] = sentSplit[len(sentSplit)-1]
+		#origSentences = [y.split('\n')[0] for y in [x for x in origSentences]]
+		#origSentences = [sents[len(sents)-1] for d in sentences]
+
+		for sent in origSentences:
+			print(sent)
+
 		tokdocuments = []
 		for document in documents:
 			sentences = []
@@ -73,15 +100,23 @@ class SnippetGenerator:
 				queryVector = []
 				
 				for word in q:
-					idf = math.log(len(document)/(self.numSentHaveWord(document, word)+1), 2)
+					#print(len(document))
+					#print(self.numSentHaveWord(document, word)+1)
+					idf = math.log(len(document)+1/(self.numSentHaveWord(document, word)+1), 2)
 					tfSent = sentence.count(word)/len(sentence)
+					#print(tfSent)
+					#print(idf)
 					sentVector.append(tfSent*idf)
 					tfQuery = query.count(word)/len(q)
 					queryVector.append(tfQuery*idf)
 
+				#print(sentVector)
+				#print(queryVector)
 				top = sum([sentVector[i]*queryVector[i] for i in range(len(q))])
 				sqrSent = sum([tok**tok for tok in sentVector], 0)
 				sqrQuery = sum([tok**tok for tok in queryVector], 0)
+				#print(sqrSent)
+				#print(sqrQuery)
 				bot = math.sqrt(sqrSent*sqrQuery)
 				cosSimSent.append(top/bot)
 			cosSims.append(cosSimSent)
@@ -97,18 +132,16 @@ class SnippetGenerator:
 				elif sim > second[1]:
 					second = [index, sim]
 			
-			snippetText = "{0} {1}".format(origSentences[i][first[0]].replace("\n", ""), origSentences[i][second[0]].replace("\n", ""))
+			sentence1 = ""
+			sentence2 = ""
+			
+			if len(origSentences[i]) == 1:
+				sentence1 = origSentences[i][first[0]]
+			if len(origSentences[i]) > 1:
+				sentence2 = " {0}".format(origSentences[i][second[0]])
+
+			snippetText = "{0}{1}".format(sentence1, sentence2)
 			snippetObj = {"title": titles[i].replace("_", " "), "snippet": snippetText}
 			finalSnippets.append(snippetObj)
-			#print("Title: {0}\n{1} {2}\n\n".format(titles[i], origSentences[i][first[0]].replace("\n", ""), origSentences[i][second[0]].replace("\n", "")))
+
 		return finalSnippets
-
-
-"""
-	[
-		{
-			title: ...,
-			snippet: ...
-		}
-	]
-	"""

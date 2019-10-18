@@ -2,6 +2,7 @@ from flask import render_template
 from app import app
 from .QuerySuggestions import QuerySuggestions
 from .SnippetGenerator import SnippetGenerator
+from .RankMeUp import RankMeUp
 from flask import jsonify
 
 @app.route('/')
@@ -17,9 +18,10 @@ def query_suggestion(query):
 
 @app.route('/search/<string:query>', methods=['GET'])
 def search_results(query):
+	ranker = RankMeUp()
+	documents = ranker.rankMeUpScotty(query)
 	snipgen = SnippetGenerator()
 	real_data = {}
 	real_data['query'] = query
-	# Get actual ranked search results here
-	real_data['search_results'] = snipgen.getSnippets(query)
+	real_data['search_results'] = snipgen.getSnippets(query, documents)
 	return render_template('search_results.html', data=real_data)
