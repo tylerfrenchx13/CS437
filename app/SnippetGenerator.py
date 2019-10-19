@@ -12,6 +12,9 @@ import string
 import math
 import csv
 import sys
+from subprocess import check_output
+import linecache
+import pandas as pd
 csv.field_size_limit(sys.maxsize)
 
 class SnippetGenerator:
@@ -40,29 +43,21 @@ class SnippetGenerator:
 		print(documentList)
 		documentList = sorted(documentList)
 
-		with open('wikipedia_text_files.csv', 'r', encoding='utf8') as src:
-			docReader = csv.reader(src)
-
-			curLine = 1
-			next(docReader)
-			docLine = None
-
-			for doc in documentList:
-				## THIS TAKES A WHILE- Iterating through the DC to get to
-				## The right documents!!!
-				#-------------------------------
+		for doc in documentList:
+			newnum = doc//100000
+			curLine = newnum * 100000
+			with open('text_processing/splitWiki/wiki{0}.tsv'.format(newnum), 'r', encoding='utf8') as src:
+				reader = csv.reader(src, delimiter="\t")
+				docLine = next(reader)
 				while curLine != doc:
-					docLine = next(docReader)
+					docLine = next(reader)
 					curLine += 1
-				#-------------------------------
-				if curLine == 0:
-					docLine = next(docReader)
 
 				print(curLine)
-				title = docLine[1]
-				content = docLine[0]
+				title = docLine[2]
+				content = docLine[1]
 				documents.append([title, content])
-
+				
 		return documents
 
 	def getSnippets(self, query, documentList):
@@ -83,8 +78,8 @@ class SnippetGenerator:
 		#origSentences = [y.split('\n')[0] for y in [x for x in origSentences]]
 		#origSentences = [sents[len(sents)-1] for d in sentences]
 
-		for sent in origSentences:
-			print(sent)
+		#for sent in origSentences:
+		#	print(sent)
 
 		tokdocuments = []
 		for document in documents:
@@ -125,7 +120,7 @@ class SnippetGenerator:
 				cosSimSent.append(top/bot)
 			cosSims.append(cosSimSent)
 
-		finalSnippets = []	
+		finalSnippets = []
 		for i, doc in enumerate(cosSims):
 			first = [0, 0]
 			second = [1, 0]
@@ -139,8 +134,9 @@ class SnippetGenerator:
 			sentence1 = ""
 			sentence2 = ""
 			
-			if len(origSentences[i]) == 1:
+			if len(origSentences[i]) > 0:
 				sentence1 = origSentences[i][first[0]]
+
 			if len(origSentences[i]) > 1:
 				sentence2 = " {0}".format(origSentences[i][second[0]])
 
