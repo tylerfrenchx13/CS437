@@ -8,13 +8,13 @@ def findCandidates(file, query):
     candidates = []
     wordOccurrence = {}
     foundOne = False
-    numFoundQueryWords = 0;
+    numFoundQueryWords = 0
     for row in fileReader:
         for word in queryArray:
             if row[0] == word:
                 numFoundQueryWords+=1
-                wordOccurrence[word] = len(row)-1;
-                newDocs = [];
+                wordOccurrence[word] = len(row)-1
+                newDocs = []
                 for i in range(len(row)-1):
                     if foundOne == False:
                         doc = row[i+1].split(':')
@@ -38,38 +38,38 @@ def ranking(candidates, metadata, termDocFile, docTermFreq, query,collectionSize
     candidateRank = {}
     queryList = query.split()
     for candidate in candidates[0]:
-        summation = [];
+        summation = []
         totalVal = 0
         for word in queryList:
             val = 0
             IDF = 0
             TF = 0
             #This represents the IDF of the document.
-            fractionalVal = collectionSize/candidates[1][word];
-            IDF = log(fractionalVal,2);
+            fractionalVal = collectionSize/candidates[1][word]
+            IDF = log(fractionalVal,2)
             #This represents the TF of the document.
             #May be able to speed up by putting this in the intial method and making sure we access files sequentially
             fileReader = open(docTermFreq, 'r', encoding="utf-8")
             fileReader = csv.reader(fileReader, delimiter='\t')
             for i in range(int(float(candidate))-1):
                 next(fileReader)
-            interestedRow = next(fileReader);
-            docLength = 0;
-            wordCount = 0;
-            largestOccurrence = 0;
+            interestedRow = next(fileReader)
+            docLength = 0
+            wordCount = 0
+            largestOccurrence = 0
             for rowWord in interestedRow:
-                result = rowWord.split(':');
+                result = rowWord.split(':')
                 docLength += int(float(result[1]))
                 if word == result[0]:
                     wordCount = int(float(result[1]))
                 if largestOccurrence < int(float(result[1])):
                     largestOccurrence = int(float(result[1]))
-            TF = wordCount/docLength;
-            TF = TF/largestOccurrence;
+            TF = wordCount/docLength
+            TF = TF/largestOccurrence
             summation.append(TF*IDF)
         for val in summation:
-            totalVal+=val;
-        candidateRank[candidate] = totalVal;
+            totalVal+=val
+        candidateRank[candidate] = totalVal
     return candidateRank
 
 rankMeUpScotty("text_processing/metadata.tsv", "text_processing/term_doc_freq.tsv", "text_processing/doc_term_freq.tsv", "hard indoor",50000)
