@@ -21,7 +21,12 @@ Project 1
 /////////////////////////////
 //Relevance Ranking Details//
 /////////////////////////////
-(data structures that eased the process, libraries used, etc.)
+For relevance ranking, we split the ranking into a find candidates method and a ranking method. The first finds if both query words 
+show up in the index for the document and proceeds to add them to a list. For each query word after the first, I used some help from
+Stack Overflow for how to only keep elements that show up in both lists to get only candidates that had all the words. For ranking, I simply
+did the formula that was given. To get the values, we used several documents, the Term Doc matrix was used for candidacy and to see how many
+documents a word shows up in. We also created a doc term matrix to just get the document to see total tokens and how many times it shows up.
+We returned a dict of doc number to its relevance ranking as a result.
 
 //////////////////////////////
 //Snippet Generation Details//
