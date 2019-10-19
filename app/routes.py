@@ -4,6 +4,15 @@ from .QuerySuggestions import QuerySuggestions
 from .SnippetGenerator import SnippetGenerator
 from .RankMeUp import RankMeUp
 from flask import jsonify
+import sys
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logging.info("initializing")
+print('initializing')
+sys.stdout.flush()
+ranker = RankMeUp()
+qs = QuerySuggestions()
 
 @app.route('/')
 def index():
@@ -13,14 +22,15 @@ def index():
 @app.route('/query_suggestion/<string:query>', methods=['GET'])
 def query_suggestion(query):
     #print(QuerySuggestions.GetCandidates('tiger'))
-	return jsonify(QuerySuggestions.GetCandidates(query))
-
+	return jsonify(qs.GetCandidates(query))
 
 @app.route('/search/<string:query>', methods=['GET'])
 def search_results(query):
-	ranker = RankMeUp()
+	app.logger.info('starting rank')
 	documents = ranker.rankMeUpScotty(query)
+	app.logger.info('starting snippet')
 	snipgen = SnippetGenerator()
+	app.logger.info('ending snippet')
 	real_data = {}
 	real_data['query'] = query
 	real_data['search_results'] = snipgen.getSnippets(query, documents)

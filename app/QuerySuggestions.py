@@ -4,7 +4,10 @@ pre_calculated_suggestions = pickle.load(open("app/data/query_suggestions.p", "r
 
 class QuerySuggestions:
 
-    def GetCandidates(q, n=10):
+    def __init__(self):
+        pass
+
+    def GetCandidates(self, q, n=10):
         if q in pre_calculated_suggestions:
             return pre_calculated_suggestions[q][:n]
         else:

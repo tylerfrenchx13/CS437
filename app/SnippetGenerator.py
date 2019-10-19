@@ -12,7 +12,8 @@ import string
 import math
 import csv
 import sys
-csv.field_size_limit(sys.maxsize)
+#csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31-1)
 
 class SnippetGenerator:
 
@@ -139,7 +140,7 @@ class SnippetGenerator:
 			sentence1 = ""
 			sentence2 = ""
 			
-			if len(origSentences[i]) == 1:
+			if len(origSentences[i]) > 0:
 				sentence1 = origSentences[i][first[0]]
 			if len(origSentences[i]) > 1:
 				sentence2 = " {0}".format(origSentences[i][second[0]])
