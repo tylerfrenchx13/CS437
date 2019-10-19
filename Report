@@ -1,0 +1,33 @@
+Tyler French, Brody Downs, Nicholas Petitmermet
+CS 437
+Project 1
+10/19/2019
+
+////////////////////////
+//Statistics of System//
+////////////////////////
+(number of documents, index size pre/post stemming, stop word removal, etc.)
+
+///////////////////////////
+//Text Processing Details//
+///////////////////////////
+(which tokenizer you used, any modifications make, stemmer/lemmatizer used, etc.).
+
+////////////////////////////
+//Query Suggestion Details//
+////////////////////////////
+(which data structures did you used to ease the retrieval of suggestions, etc.).
+
+/////////////////////////////
+//Relevance Ranking Details//
+/////////////////////////////
+(data structures that eased the process, libraries used, etc.)
+
+//////////////////////////////
+//Snippet Generation Details//
+//////////////////////////////
+(data structures that eased the process, libraries used, etc.)
+
+//////////////
+//Discussion//
+//////////////
