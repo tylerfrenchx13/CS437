@@ -77,8 +77,6 @@ def writeTermDocFreq():
 		tokens = next(reader)
 		for token in tokens:
 			tokenDict[token] = {}
-
-	tokenDict = {k:tokenDict[k] for k in list(tokenDict)}
 	
 	for num in range(0, 17):
 		print("Reading tokens{0}".format(num))
