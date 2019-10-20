@@ -49,6 +49,7 @@ def writeDocTermFreq():
 
 def writeTermDocFreq():
 
+	"""
 	tokenDict = {}
 
 	
@@ -64,51 +65,38 @@ def writeTermDocFreq():
 						tokenDict[token] = 0
 	tokenDict = sorted(tokenDict)
 	
-	"""
 	with open('tokenList.csv', 'w', encoding='utf8') as f:
 		for index, token in enumerate(tokenDict):
 			f.write("{0}".format(token))
 			if index < len(tokenDict) - 1:
 				f.write(",")
-	
+	"""
+	tokenDict = {}
 	with open('tokenList.csv', 'r', encoding='utf8') as f:
 		reader = csv.reader(f)
 		tokens = next(reader)
 		for token in tokens:
 			tokenDict[token] = {}
-	"""
 
-	doneFlag = False
-	idx = 0
-	while not doneFlag:
-		idx = idx * 10000
-		endIdx = idx + 10000
-		if len(tokenDict) - idx < 10000:
-			endIdx = len(tokenDict)
-			doneFlag = True
-
-		tokenDict = {k:tokenDict[k] for k in list(tokenDict)[idx:endIdx]}
-		
-		for num in range(0, 17):
-			print("Reading tokens{0}".format(num))
-			with open('tokens/tokens{0}.csv'.format(num), 'r', encoding='utf8') as f:
-				for index, row in enumerate(csv.reader(f)):
-					count = Counter(row)
-					for c in count:
-						if c in tokenDict:
-							tokenDict[c][(index+1)+(100000*num)] = count[c]
-
-		with open('term_doc_freqFinal0.tsv', 'w', encoding='utf8') as f:
-			for token in tokenDict:
-				f.write("{0}\t".format(token))
-				for index, doc in enumerate(tokenDict[token]):
-					if index > 0:
-						f.write("\t")
-					f.write("{0}:{1}".format(doc, tokenDict[token][doc]))
-				f.write("\n")
-		
-		idx += 1
+	tokenDict = {k:tokenDict[k] for k in list(tokenDict)}
 	
+	for num in range(0, 17):
+		print("Reading tokens{0}".format(num))
+		with open('tokens/tokens{0}.csv'.format(num), 'r', encoding='utf8') as f:
+			for index, row in enumerate(csv.reader(f)):
+				count = Counter(row)
+				for c in count:
+					if c in tokenDict:
+						tokenDict[c][(index+1)+(100000*num)] = count[c]
+
+	with open('term_doc_freqFinal0.tsv', 'a', encoding='utf8') as f:
+		for token in tokenDict:
+			f.write("{0}\t".format(token))
+			for index, doc in enumerate(tokenDict[token]):
+				if index > 0:
+					f.write("\t")
+				f.write("{0}:{1}".format(doc, tokenDict[token][doc]))
+			f.write("\n")
 
 def isEnglish(s):
     try:
