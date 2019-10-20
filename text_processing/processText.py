@@ -51,6 +51,7 @@ def writeTermDocFreq():
 
 	tokenDict = {}
 
+	"""
 	for num in range(0, 17):
 		print("Reading tokens{0}".format(num))
 		with open('tokens/tokens{0}.csv'.format(num), 'r', encoding='utf8') as f:
@@ -63,7 +64,6 @@ def writeTermDocFreq():
 						tokenDict[token] = 0
 	tokenDict = sorted(tokenDict)
 	
-	"""
 	with open('tokenList.csv', 'w', encoding='utf8') as f:
 		for index, token in enumerate(tokenDict):
 			f.write("{0}".format(token))
