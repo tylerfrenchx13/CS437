@@ -39,13 +39,9 @@ class SnippetGenerator:
 	def getDocuments(self, documentList):
 		documents = []
 		print(documentList)
-		sortDocs = sorted(documentList)
-		sortDocs = [d + 1 for d in sortDocs]
-		docDict = {}
-		for doc in sortDocs:
-			docDict[doc] = {}
+		documentList = [d + 1 for d in documentList]
 
-		for doc in sortDocs:
+		for doc in documentList:
 			newnum = doc//100000
 			curLine = (newnum * 100000) + 2
 			with open('text_processing/splitWiki/wiki{0}.tsv'.format(newnum), 'r', encoding='utf8') as src:
@@ -58,10 +54,7 @@ class SnippetGenerator:
 				print(curLine)
 				title = docLine[2]
 				content = docLine[1]
-				docDict[doc] = [title, content]
-		
-		for doc in docDict:
-			documents.append([docDict[doc]])
+				documents.append([title, content])
 
 		return documents
 
