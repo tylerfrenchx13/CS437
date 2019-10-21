@@ -9,6 +9,7 @@ def findCandidates(file, query):
     wordOccurrence = {}
     foundOne = False
     numFoundQueryWords = 0
+    wordSize = len(query)
     for row in fileReader:
         for word in queryArray:
             if row[0] == word:
@@ -27,6 +28,8 @@ def findCandidates(file, query):
                 foundOne=True
     if(numFoundQueryWords != len(queryArray)):
         candidates = []
+
+        
     return [candidates,wordOccurrence]
 
 def rankMeUpScotty(metadataFile,termDocFile, docTermFreq, query, collectionSize):
