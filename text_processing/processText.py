@@ -14,7 +14,8 @@ ps = PorterStemmer()
 #table = str.maketrans({key: None for key in string.punctuation})
 import sys
 myStopwords = {"''", '``', '“', '”', '’', "'s"}
-csv.field_size_limit(sys.maxsize)
+#csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31-1)
 
 NUM_DOCS = 100000
 CHUNKSIZE = 1000
@@ -78,8 +79,9 @@ def writeTermDocFreq():
 		for token in tokens:
 			tokenDict[token] = {}
 
-	tokenDict = {k:tokenDict[k] for k in list(tokenDict)}
-	
+	#tokenDict = {k:tokenDict[k] for k in list(tokenDict)}
+	print("83", len(tokenDict))
+
 	for num in range(0, 17):
 		print("Reading tokens{0}".format(num))
 		with open('tokens/tokens{0}.csv'.format(num), 'r', encoding='utf8') as f:
@@ -89,6 +91,8 @@ def writeTermDocFreq():
 					if c in tokenDict:
 						tokenDict[c][(index+1)+(100000*num)] = count[c]
 
+	print("94", len(tokenDict))
+	progress = 0
 	with open('term_doc_freqFinal0.tsv', 'a', encoding='utf8') as f:
 		for token in tokenDict:
 			f.write("{0}\t".format(token))
@@ -97,6 +101,10 @@ def writeTermDocFreq():
 					f.write("\t")
 				f.write("{0}:{1}".format(doc, tokenDict[token][doc]))
 			f.write("\n")
+			if progress % 1000 == 0:
+				print("progress:",progress)
+			progress += 1
+	f.close()
 
 def isEnglish(s):
     try:

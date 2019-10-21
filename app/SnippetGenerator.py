@@ -40,10 +40,11 @@ class SnippetGenerator:
 		documents = []
 		print(documentList)
 		documentList = sorted(documentList)
+		documentList = [d + 1 for d in documentList]
 
 		for doc in documentList:
 			newnum = doc//100000
-			curLine = newnum * 100000
+			curLine = (newnum * 100000) + 2
 			with open('text_processing/splitWiki/wiki{0}.tsv'.format(newnum), 'r', encoding='utf8') as src:
 				reader = csv.reader(src, delimiter="\t")
 				docLine = next(reader)
