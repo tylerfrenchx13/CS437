@@ -66,7 +66,9 @@ class RankMeUp:
 
 	def getTopN(self, ranks, n):
 		print("Geting top n")
-		return [i[0] for i in Counter(ranks).most_common(n)]
+		top5 = [i for i in Counter(ranks).most_common(n)]
+		print(top5)
+		return [i[0] for i in top5]
 
 	def ranking(self, candidates, queryList):
 		print("start ranking")
@@ -119,8 +121,8 @@ class RankMeUp:
 				tfidf_time += time.time()-start_time
 
 				#print(wordCount)
-				TF = (wordCount / docLength) / maxD
-				#TF = wordCount / docLength
+				#TF = (wordCount / docLength) / maxD
+				TF = wordCount / docLength
 				summation += TF * IDF
 
 			candidateRank[candidate] = summation
