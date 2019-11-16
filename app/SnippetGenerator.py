@@ -38,14 +38,10 @@ class SnippetGenerator:
 
 	def getDocuments(self, documentList):
 		documents = []
-		print(documentList)
-		sortDocs = sorted(documentList)
-		sortDocs = [d + 1 for d in sortDocs]
-		docDict = {}
-		for doc in sortDocs:
-			docDict[doc] = {}
+		#print(documentList)
+		documentList = [d + 1 for d in documentList]
 
-		for doc in sortDocs:
+		for doc in documentList:
 			newnum = doc//100000
 			curLine = (newnum * 100000) + 2
 			with open('text_processing/splitWiki/wiki{0}.tsv'.format(newnum), 'r', encoding='utf8') as src:
@@ -55,13 +51,10 @@ class SnippetGenerator:
 					docLine = next(reader)
 					curLine += 1
 
-				print(curLine)
+				#print(curLine)
 				title = docLine[2]
 				content = docLine[1]
-				docDict[doc] = [title, content]
-		
-		for doc in docDict:
-			documents.append([docDict[doc]])
+				documents.append([title, content])
 
 		return documents
 
@@ -72,11 +65,16 @@ class SnippetGenerator:
 		titles = [d[0] for d in documents]
 		documents = [d[1] for d in documents]
 		origSentences = [sent_tokenize(d) for d in documents]
+		origSentences = [s[1:] if len(s) > 1 else s for s in origSentences]
+		#print(origSentences)
 		for x, doc in enumerate(origSentences):
 			for y, sent in enumerate(doc):
 				if '\n' in sent:
 					sentSplit = sent.split('\n')
+					#print(sent)
 					if 'may refer to' in sent:
+						#print(sent)
+						#print(sentSplit)
 						origSentences[x][y] = sentSplit[0]
 					else:
 						origSentences[x][y] = sentSplit[len(sentSplit)-1]
@@ -91,13 +89,19 @@ class SnippetGenerator:
 			sentences = []
 			for sentence in sent_tokenize(document):
 				sentences.append(self.tokenize(sentence))
+			#print(sentences)
+			if len(sentences) > 1:
+				sentences = sentences[1:]
+			#print(sentences)
 			tokdocuments.append(sentences)
+		
 
 		cosSims = []
 		for document in tokdocuments:
 			cosSimSent = []
 			for sentence in document:
-				if len(sentence) < 1:
+				if len(sentence) < 2:
+					cosSimSent.append(0)
 					continue
 
 				sentVector = []
@@ -129,7 +133,9 @@ class SnippetGenerator:
 		for i, doc in enumerate(cosSims):
 			first = [0, 0]
 			second = [1, 0]
+
 			for index, sim in enumerate(doc):
+				#print(index, sim)
 				if sim > first[1]:
 					second = first
 					first = [index, sim]
@@ -141,12 +147,23 @@ class SnippetGenerator:
 			
 			if len(origSentences[i]) > 0:
 				sentence1 = origSentences[i][first[0]]
-
-			if len(origSentences[i]) > 1:
+			#print(origSentences[i])
+			#print(i)
+			#print(origSentences)
+			#print(first)
+			#print(second)
+			#print(len(origSentences[i]))
+			if len(origSentences[i]) > 1 and first[0] != second[0]:
 				sentence2 = " {0}".format(origSentences[i][second[0]])
 
+			#print(sentence1)
+			#print(sentence2)
 			snippetText = "{0}{1}".format(sentence1, sentence2)
 			snippetObj = {"title": titles[i].replace("_", " "), "snippet": snippetText}
 			finalSnippets.append(snippetObj)
 
 		return finalSnippets
+
+#sg = SnippetGenerator()
+
+#print(sg.getSnippets('jaguar', [309336, 8860, 11654, 1619694, 1154891]))
