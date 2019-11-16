@@ -9,6 +9,7 @@ from nltk.corpus import stopwords
 import time
 import string
 import re
+from itertools import combinations
 
 #words = set([word.lower() for word in set(nltk.corpus.words.words())])
 stopWords = set(stopwords.words('english'))
@@ -160,7 +161,23 @@ class RankMeUp:
 				candidates.update(newDocs)
 			else:
 				candidates = candidates.intersection(newDocs)
+		# Code to grab the combinations of the query
+		gramSize = len(queryList) - 1
+		while(len(candidates) <50 and gramSize != 0):
+			newQueryList = combinations(queryList, gramSize)
+			for wordsTuple in newQueryList:
+				for word in wordsTuple:
+					wordOccurrence[word] = len(termDocDict[word])
 
+					newDocs = termDocDict[word]
+					print(word, ":", len(newDocs))
+					newDocs = set(newDocs)
+					if len(candidates) == 0:
+						candidates.update(newDocs)
+					else:
+						candidates = candidates.intersection(newDocs)
+			gramSize-=1
+			# End new code
 		return [list(candidates), wordOccurrence]
 
 	def rankMeUpScotty(self, query):
