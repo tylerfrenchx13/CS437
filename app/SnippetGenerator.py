@@ -12,6 +12,8 @@ import string
 import math
 import csv
 import sys
+from nltk.tokenize import TweetTokenizer
+tknzr = TweetTokenizer()
 #csv.field_size_limit(sys.maxsize)
 csv.field_size_limit(2**31-1)
 
@@ -29,33 +31,34 @@ class SnippetGenerator:
 		return count
 
 	def tokenize(self, myString):
-		myString = myString.lower()
-		tokenized = word_tokenize(myString)
-		noStopwords = [token for token in tokenized if not token in stopWords and not token in string.punctuation and not token in myStopwords]
-		stemmed = [ps.stem(word) for word in noStopwords]
-		myString = stemmed
-		return myString
+		tokenized = myString.lower()
+		tokenized = tknzr.tokenize(tokenized)
+		#tokenized = [token for token in tokenized if isEnglish(token)]
+		tokenized = [token for token in tokenized if not token in string.punctuation]
+		tokenized = [token for token in tokenized if not token in stopWords]
+		tokenized = [ps.stem(word) for word in tokenized]
+		return tokenized
 
 	def getDocuments(self, documentList):
+		#print("A")
 		documents = []
-		#print(documentList)
-		documentList = [d + 1 for d in documentList]
-
+		
 		for doc in documentList:
-			newnum = doc//100000
-			curLine = (newnum * 100000) + 2
-			with open('text_processing/splitWiki/wiki{0}.tsv'.format(newnum), 'r', encoding='utf8') as src:
-				reader = csv.reader(src, delimiter="\t")
-				docLine = next(reader)
-				while curLine != doc:
-					docLine = next(reader)
-					curLine += 1
+			with open('text_processing/steam-clean.csv', 'r', encoding='utf8') as src:
+				reader = csv.reader(src)
+				next(reader)
+				for line in reader:
+					#print(line[0])
+					#print(doc)
+					if int(line[0]) == doc:
+						print("FOUND: {0}".format(doc))
+						title = line[1]
+						content = line[2]
+						documents.append([title, content])
+						break
 
-				#print(curLine)
-				title = docLine[2]
-				content = docLine[1]
-				documents.append([title, content])
-
+		#print(documents)
+		#print("B")
 		return documents
 
 	def getSnippets(self, query, documentList):
@@ -65,29 +68,33 @@ class SnippetGenerator:
 		titles = [d[0] for d in documents]
 		documents = [d[1] for d in documents]
 		origSentences = [sent_tokenize(d) for d in documents]
-		origSentences = [s[1:] if len(s) > 1 else s for s in origSentences]
+		#origSentences = [s[1:] if len(s) > 1 else s for s in origSentences]
 		#print(origSentences)
-		for x, doc in enumerate(origSentences):
-			for y, sent in enumerate(doc):
-				if '\n' in sent:
-					sentSplit = sent.split('\n')
+		#for x, doc in enumerate(origSentences):
+			#for y, sent in enumerate(doc):
+				#if '\n' in sent:
+					#sentSplit = sent.split('\n')
 					#print(sent)
-					if 'may refer to' in sent:
+					#if 'may refer to' in sent:
 						#print(sent)
 						#print(sentSplit)
-						origSentences[x][y] = sentSplit[0]
-					else:
-						origSentences[x][y] = sentSplit[len(sentSplit)-1]
+					#	origSentences[x][y] = sentSplit[0]
+					#else:
+					#	origSentences[x][y] = sentSplit[len(sentSplit)-1]
 		#origSentences = [y.split('\n')[0] for y in [x for x in origSentences]]
 		#origSentences = [sents[len(sents)-1] for d in sentences]
 
 		#for sent in origSentences:
 		#	print(sent)
 
+		#print(origSentences)
+
+		workSentences = origSentences
 		tokdocuments = []
-		for document in documents:
+		for document in workSentences:
 			sentences = []
-			for sentence in sent_tokenize(document):
+			for sentence in document:
+				#print(sentence)
 				sentences.append(self.tokenize(sentence))
 			#print(sentences)
 			if len(sentences) > 1:
@@ -96,8 +103,11 @@ class SnippetGenerator:
 			tokdocuments.append(sentences)
 		
 
+		#print(tokdocuments)
+
 		cosSims = []
 		for document in tokdocuments:
+			#print(document)
 			cosSimSent = []
 			for sentence in document:
 				if len(sentence) < 2:
@@ -159,11 +169,10 @@ class SnippetGenerator:
 			#print(sentence1)
 			#print(sentence2)
 			snippetText = "{0}{1}".format(sentence1, sentence2)
-			snippetObj = {"title": titles[i].replace("_", " "), "snippet": snippetText}
+			snippetObj = {"title": titles[i], "snippet": snippetText}
 			finalSnippets.append(snippetObj)
 
 		return finalSnippets
 
 #sg = SnippetGenerator()
-
-#print(sg.getSnippets('jaguar', [309336, 8860, 11654, 1619694, 1154891]))
+#print(sg.getSnippets('team', [0, 1, 2, 3, 4]))
