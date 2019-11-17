@@ -21,16 +21,13 @@ def index():
 
 @app.route('/query_suggestion/<string:query>', methods=['GET'])
 def query_suggestion(query):
-    #print(QuerySuggestions.GetCandidates('tiger'))
+    #print(QuerySuggestions.GetCandidates('tiger'))W
 	return jsonify(qs.GetCandidates(query))
 
 @app.route('/search/<string:query>', methods=['GET'])
 def search_results(query):
-	app.logger.info('starting rank')
 	documents = ranker.rankMeUpScotty(query)
-	app.logger.info('starting snippet')
 	snipgen = SnippetGenerator()
-	app.logger.info('ending snippet')
 	real_data = {}
 	real_data['query'] = query
 	real_data['search_results'] = snipgen.getSnippets(query, documents)

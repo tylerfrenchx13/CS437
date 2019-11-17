@@ -4,9 +4,9 @@ $('.query-input').on('input', function(event){
         $('.suggestion-list').empty()
         return
     }
-    if(this.value[this.value.length-1] == " ")
+    else//this.value[this.value.length-1] == " ")
     {
-        $.ajax({url: "/query_suggestion/" + this.value, success: function(result){
+        $.ajax({url: "/query_suggestion/" + encodeURI(this.value), success: function(result){
             $('.suggestion-list').empty()
             
             $.each( result, function( i, r ) {

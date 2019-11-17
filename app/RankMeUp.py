@@ -17,13 +17,13 @@ ps = PorterStemmer()
 
 from collections import Counter
 
-metaFile = "text_processing/metadataFinal0.tsv"
-termDocFile = "text_processing/term_doc_freqFinal0.tsv"
-docTermFile = "text_processing/doc_term_freqFinal0.tsv"
+metaFile = "text_processing/metadataP2.tsv"
+termDocFile = "text_processing/termDocFreqP2.tsv"
+docTermFile = "text_processing/docTermFreqP2.tsv"
 
 docTermDict = {}
 metaFileDict = {}
-index = 1
+index = 0
 print("creating dict")
 with open(metaFile, 'r', encoding="utf-8") as f1, open(docTermFile, 'r', encoding='utf8') as f2:
 	metaReader = csv.reader(f1, delimiter='\t')
@@ -32,7 +32,7 @@ with open(metaFile, 'r', encoding="utf-8") as f1, open(docTermFile, 'r', encodin
 		metaFileDict[index] = row1
 		#docTermDict[index] = dict([(r.split(':')[0],int(r.split(':')[1])) for r in row2])
 		#docTermDict[index] = row2
-		docTermDict[index] = [row for row in row2 if row.split(':')[0].isalpha and len(row.split(':')[0]) < 11]
+		docTermDict[index] = [row for row in row2 if len(row.split(':')[0]) < 12]
 		index += 1
 		if index % 10000 == 0:
 			print(index)
@@ -40,7 +40,7 @@ f1.close()
 f2.close()
 docTermDict.update(dict(docTermDict))
 #metaFileDict.update(dict(metaFileDict))
-print("docTermDict Created")
+print("docTermDict Created", len(docTermDict))
 
 print("creating dict")
 termDocDict = {}
@@ -49,16 +49,15 @@ with open(termDocFile, 'r', encoding='utf8') as f:
 	fileReader = csv.reader(f, delimiter='\t')
 	for row in fileReader:
 		#print(row)
-		if len(row) > 20 and len(row[0]) < 12 and row[0].isalpha():
-			termDocDict[row[0]] = [int(r.split(':')[0]) for r in row[1:]]
+		if len(row) > 1 and len(row[0]) < 12 :#and row[0].isalpha():
+			termDocDict[row[0][1:-1]] = [int(r.split(':')[0]) for r in row[1:]]
 		index += 1
 		if index % 10000 == 0:
 			print(index)
 f.close()
 print("termDocDict Created", len(termDocDict))
 
-
-dcSize = 1662757
+dcSize = len(docTermDict)
 
 class RankMeUp:
 
@@ -83,7 +82,7 @@ class RankMeUp:
 		tfidf_time = 0
 		lines_time = 0
 
-		print("amound of candidates: " + str(len(candidates[0])))
+		print("amount of candidates: " + str(len(candidates[0])))
 		for candidate in candidates[0]:
 			# Iterate until we reach the right line!
 			## THIS TAKES A WHILE- Iterating through both metadata and docTerm
@@ -114,7 +113,10 @@ class RankMeUp:
 				IDF = log(dcSize / candidates[1][word], 2)
 				start_time = time.time()
 				#wordCount = docTermLine[word]
-				wordCount = [grp.split(':')[1] for grp in docTermLine if word == grp.split(':')[0]]
+				wordCount = [grp.split(':')[1] for grp in docTermLine if word == grp.split(':')[0][1:-1]]
+				#print("word", word)
+				#print("first item", docTermLine[0].split(':')[0][1:-1])
+				#print("wordcount", wordCount)
 				if len(wordCount) == 0:
 					wordCount = 0
 				else:
@@ -124,8 +126,10 @@ class RankMeUp:
 				#print(wordCount)
 				#TF = (wordCount / docLength) / maxD
 				TF = wordCount / docLength
+				3#print("tf", TF)
+				#print("idf", IDF)
 				summation += TF * IDF
-
+			print("Candidate:", candidate,maxD,docLength, summation)
 			candidateRank[candidate] = summation
 		print("lines_Time", lines_time)
 		print("tfidf_time", tfidf_time)
@@ -147,7 +151,8 @@ class RankMeUp:
 			#for row in fileReader:
 			#	if row[0] not in queryList:
 			#		continue
-			
+		print("querylist", queryList)
+		print("termdocdict", termDocDict[queryList[0]])
 		for word in queryList:
 			#		if row[0] == word:
 			#			print(row[0],row[1:5])
@@ -162,6 +167,7 @@ class RankMeUp:
 			else:
 				candidates = candidates.intersection(newDocs)
 		# Code to grab the combinations of the query
+		print("len of candidates", len(candidates))
 		gramSize = len(queryList) - 1
 		while(len(candidates) <50 and gramSize != 0):
 			newQueryList = combinations(queryList, gramSize)
@@ -183,13 +189,15 @@ class RankMeUp:
 	def rankMeUpScotty(self, query):
 		print("starting rankMeUpScotty")
 		# Tokenize the query into a list
+		print("query", query)
+		print("termdocdict for hellp", termDocDict['hello'])
 		lowered = query.lower()
 		tokenized = word_tokenize(lowered)
 		tokenized = [ps.stem(word) for word in tokenized]
 		noStopwords = [token for token in tokenized if not token in stopWords and token in termDocDict]
 		#noStopwords = [token for token in tokenized if token not in stopWords]
 		queryArray = [word for word in noStopwords]
-		print(queryArray)
+		print("queryArray", queryArray)
 		candidates = self.findCandidates(queryArray)
 		print(candidates[1])
 		ranks = self.ranking(candidates, queryArray)
