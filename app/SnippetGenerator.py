@@ -42,20 +42,22 @@ class SnippetGenerator:
 	def getDocuments(self, documentList):
 		#print("A")
 		documents = []
+		documentList = [d + 2 for d in documentList]
 		
 		for doc in documentList:
 			with open('text_processing/steam-clean.csv', 'r', encoding='utf8') as src:
 				reader = csv.reader(src)
-				next(reader)
-				for line in reader:
-					#print(line[0])
-					#print(doc)
-					if int(line[0]) == doc:
-						print("FOUND: {0}".format(doc))
-						title = line[1]
-						content = line[2]
-						documents.append([title, content])
-						break
+				docLine = next(reader)
+				curLine = 1
+				while curLine != doc:
+					#print(curLine)
+					docLine = next(reader)
+					curLine += 1
+
+				print("B")
+				title = docLine[1]
+				content = docLine[2]
+				documents.append([title, content])
 
 		#print(documents)
 		#print("B")
