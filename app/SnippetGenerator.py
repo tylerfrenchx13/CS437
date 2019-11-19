@@ -99,8 +99,8 @@ class SnippetGenerator:
 				#print(sentence)
 				sentences.append(self.tokenize(sentence))
 			#print(sentences)
-			if len(sentences) > 1:
-				sentences = sentences[1:]
+			#if len(sentences) > 1:
+			#	sentences = sentences[1:]
 			#print(sentences)
 			tokdocuments.append(sentences)
 		

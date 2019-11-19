@@ -129,7 +129,7 @@ class RankMeUp:
 				3#print("tf", TF)
 				#print("idf", IDF)
 				summation += TF * IDF
-			print("Candidate:", candidate,maxD,docLength, summation)
+			#print("Candidate:", candidate,maxD,docLength, summation)
 			candidateRank[candidate] = summation
 		print("lines_Time", lines_time)
 		print("tfidf_time", tfidf_time)
