@@ -18,8 +18,7 @@ tknzr = TweetTokenizer()
 import sys
 myStopwords = {"--", "...", "’", "–", "”", "“", "…", "•", "—", "‘"}
 zipfsWords = {
-	"game", "play", "s", "world", "new", "use", "time", "featur", "player", "one",
-	"level", "differ", "take", "get", "make", "way", "uniqu", "find", "enemi", "challeng"
+	"game", "featur", "play", "world", "new", "use", "time", "level", "player", "one"
 }
 #csv.field_size_limit(sys.maxsize)
 csv.field_size_limit(2**31-1)
@@ -76,7 +75,7 @@ def tokenize(content):
 	tokenized = [token for token in tokenized if not token in stopWords]
 	tokenized = [ps.stem(word) for word in tokenized]
 	"""final = [re.sub('[^A-Za-z0-9]+', '', token) for token in stemmed]"""
-	"""final = [token for token in stemmed if not token in zipfsWords]"""
+	tokenized = [token for token in tokenized if not token in zipfsWords]
 	return tokenized
 
 def createTermDoc():
