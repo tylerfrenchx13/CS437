@@ -14,6 +14,9 @@ import csv
 import sys
 from nltk.tokenize import TweetTokenizer
 tknzr = TweetTokenizer()
+zipfsWords = {
+	"game", "featur", "play", "world", "new", "use", "time", "level", "player", "one"
+}
 #csv.field_size_limit(sys.maxsize)
 csv.field_size_limit(2**31-1)
 
@@ -37,6 +40,7 @@ class SnippetGenerator:
 		tokenized = [token for token in tokenized if not token in string.punctuation]
 		tokenized = [token for token in tokenized if not token in stopWords]
 		tokenized = [ps.stem(word) for word in tokenized]
+		tokenized = [token for token in tokenized if not token in zipfsWords]
 		return tokenized
 
 	def getDocuments(self, documentList):
@@ -120,6 +124,7 @@ class SnippetGenerator:
 				queryVector = []
 				
 				for word in q:
+					print(word)
 					#print(len(document))
 					#print(self.numSentHaveWord(document, word)+1)
 					idf = math.log(len(document)+1/(self.numSentHaveWord(document, word)+1), 2)
